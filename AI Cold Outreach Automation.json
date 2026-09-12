@@ -1,0 +1,430 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 20
+            }
+          ]
+        }
+      },
+      "id": "db595a03-3cb3-4e18-a6cc-5b3bc0d751d1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1DpTJT_RzD8qwcOfvPo9KocL6JXW584PZFW4QtSXe8sY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DpTJT_RzD8qwcOfvPo9KocL6JXW584PZFW4QtSXe8sY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "c5467662-e090-4ef7-a1c5-9057c019d655",
+      "name": "Get Data from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "n4SKX1Rs3rFVKfyA",
+          "name": "sohawaseem387@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a personalized cold outreach email for this contact:\n- contact_person: {{ $json.Name }}\n- business_name: {{ $json['Business Name'] }}\n- category: {{ $json.Category }}\n- city: {{ $json.City }}\n- business_type: {{ $json.Category }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a professional B2B Copywriter and Outreach Strategist writing on behalf of Soha Waseem, an AI Solutions Engineer who builds custom AI agents for e-commerce brands.\n\nOBJECTIVE\n\nProduce a personalized, high conversion cold outreach email that offers custom AI agent development services. The email must maintain a polished, executive tone; use clean paragraph spacing; bold key metrics and value terms; and close with a portfolio callout.\n\nFALLBACK LOGIC\n\nIf any variable is missing or undefined, apply the following defaults:\n\ncontact_person → \"there\"\nbusiness_name → \"your store\"\ncategory → \"e-commerce\"\ncity → omit all geographic references entirely\n\nFORMATTING REQUIREMENTS\n\nParagraph Separation: Every paragraph must be separated by a full blank line. Never merge paragraphs into dense blocks of text.\nBullet Points: Each bullet point sits on its own line, with a blank line before and after the bullet list. Use standard bullet symbols (• or *) followed by a space.\nBold Emphasis: Use bold formatting for all key metrics, value propositions, and callouts.\nTone: Confident, concise, and consultative. Avoid filler language, hype, or overly casual phrasing.\n\nVALUE PROPOSITION GUIDELINES\n\nInclude exactly two niche relevant AI agent use cases, each supported by a quantified business outcome:\n\nSupport Efficiency: Reference automatically resolving up to 70% of routine inquiries, or reducing response times to under 5 seconds.\nConversion Impact: Reference lifting conversion rates or average order value through 24/7 automated consultations.\n\nSIGN OFF REQUIREMENTS\n\nClose the email with Soha Waseem's full signature block.\nInclude a direct portfolio link using the exact label \"My Portfolio\".\nDo not use dashes anywhere in the final email output; use commas, periods, or parentheses instead.\n\nOUTPUT TEMPLATE\n\nSubject: A quick question about AI automation for [business_name]\n\nHi [contact_person],\n\nI have been following [business_name] and admire your presence in the [category] space in [city].\n\nI'm Soha Waseem, an AI Solutions Engineer who builds custom AI agents for [category] brands to automate support and drive conversions.\n\nFor a brand like [business_name], a tailored AI agent can deliver:\n\n[Use Case 1 Title]: [Description of capability], reducing customer support workload by up to 70%.\n[Use Case 2 Title]: [Description of capability], providing instant, 24/7 assistance to lift conversion rates by 15 to 20%.\n\nThe goal is simple: remove manual support tasks while giving your shoppers expert level, always on guidance.\n\nWould you be open to a 10 minute demo next week to see how this would look for [business_name]?\n\nBest regards,\nSoha Waseem\nAI Solutions Engineer, Karachi, Pakistan\nPortfolio: My Portfolio (https://sohawaseem-portfolio.vercel.app/)"
+        }
+      },
+      "id": "312238a5-c470-40a6-9f5f-7bd11a692635",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "id": "52107f29-bea3-4709-ba8b-070f2f198a99",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        176
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ynq5JS9H5T5FsX4i",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Subject\": \"California\",\n\t\"Body\": \"Los Angeles\"\n}"
+      },
+      "id": "6b5354d5-0555-494a-ba2b-c17f526d8cde",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  // 1. Extract the email body text from the AI Agent output\n  let raw = item.json.output || item.json.Body || item.json.text || item.json.message?.content || item.json.response || item.json;\n  if (typeof raw === 'object' && raw !== null) {\n    raw = raw.Body || raw.text || raw.content || raw.message || JSON.stringify(raw);\n  }\n  let text = String(raw || \"\");\n\n  // 2. Normalize escaped newlines to real newlines\n  text = text.replace(/\\\\n/g, '\\n');\n\n  // 3. Collapse 3+ consecutive newlines into one clean paragraph break\n  text = text.replace(/\\n{3,}/g, '\\n\\n').trim();\n\n  // 4. Convert markdown links [label](url) to anchors (before bold)\n  text = text.replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^)]+)\\)/g, '<a href=\"$2\">$1</a>');\n\n  // 5. Convert markdown bold **text** to <strong> BEFORE touching bullets\n  text = text.replace(/\\*\\*([^*]+?)\\*\\*/g, '<strong>$1</strong>');\n\n  // 6. Normalize any bullet marker (*, -, •) at line start to one clean bullet\n  text = text.split('\\n').map(line => line.replace(/^\\s*[\\*\\-•]\\s+/, '• ')).join('\\n');\n\n  // 7. Convert newlines to HTML breaks: paragraph gaps first, then single breaks\n  let body = text.replace(/\\n\\n/g, '<br><br>').replace(/\\n/g, '<br>');\n\n  // 8. Guard against residual stacked breaks\n  body = body.replace(/(?:<br>\\s*){3,}/g, '<br><br>');\n\n  // 9. Output formatted HTML string\n  item.json.formattedHtml = `<div style=\"font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #222222;\">${body}</div>`;\n}\n\nreturn $input.all();"
+      },
+      "id": "93b396b2-7234-4b53-aa5f-71ca40ff5322",
+      "name": "Code in JavaScript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1WPEANY3nqKLLEsHbdQZMdPokw5NkOT15",
+          "mode": "list",
+          "cachedResultName": "Portfolio.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1WPEANY3nqKLLEsHbdQZMdPokw5NkOT15/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "id": "aeb306a8-a6b1-4f46-a2cc-274fd9dea6c2",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        992,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "6SBMRhK4moea9q0A",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Data from Sheet').item.json.Email }}",
+        "subject": "={{ $('AI Agent').item.json.output.Subject }}",
+        "message": "={{ $('Code in JavaScript').item.json.formattedHtml }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "id": "76d0b11d-6342-4651-9093-7e0d6ecb6aec",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        0
+      ],
+      "webhookId": "3cffd6fd-dab5-43a1-b6a5-a3662da9fabd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2VrhIfyDSjtDvvgX",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1DpTJT_RzD8qwcOfvPo9KocL6JXW584PZFW4QtSXe8sY",
+          "mode": "list",
+          "cachedResultName": "Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DpTJT_RzD8qwcOfvPo9KocL6JXW584PZFW4QtSXe8sY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DpTJT_RzD8qwcOfvPo9KocL6JXW584PZFW4QtSXe8sY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Get Data from Sheet').item.json.Email }}",
+            "Sent Data": "={{ $('Schedule Trigger').item.json['Readable date'] }}",
+            "Status": "={{ $json.labelIds[0] }}",
+            "Email Subject": "={{ $('Code in JavaScript').item.json.output.Subject }}",
+            "Email Body": "={{ $('Code in JavaScript').item.json.output.Body }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sent Data",
+              "displayName": "Sent Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Subject",
+              "displayName": "Email Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Body",
+              "displayName": "Email Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1392,
+        16
+      ],
+      "id": "d44ad438-e0a6-4418-90af-d8bc5b8272de",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "n4SKX1Rs3rFVKfyA",
+          "name": "sohawaseem387@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Data from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Data from Sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4efef090-ae99-46da-9638-111704f7e075",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1dc31a1b7e45e1f22b49334d8c3a2b709e4cc790fa74b491c6f41a7941d83cb9"
+  },
+  "nodeGroups": [],
+  "id": "9Z2T4oRe4CJMmdQ0",
+  "tags": []
+}
